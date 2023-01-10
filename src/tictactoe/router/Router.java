@@ -7,7 +7,7 @@ package tictactoe.router;
 import java.util.concurrent.Future;
 
 public interface Router {
-    <T> Future<T> push(Route<T> route);
+    <T>Future <T>push(Route<T> route);
 
     boolean pop();
 
