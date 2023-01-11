@@ -47,8 +47,8 @@ public class WinnerPlayerController extends RouteViewController{
     public void initialize(URL url, ResourceBundle rb) {
         scene().getStylesheets().add(resourcesLoader().getCss(Styles.BASE_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
-         file = new File("");
-         media = new Media(file.toURI().toString());
+        file = new File("");
+        media = new Media(file.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
         videoView.setMediaPlayer(mediaPlayer);
