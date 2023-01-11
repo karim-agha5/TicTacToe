@@ -3,7 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/game/result/WinnerPlayerController.java</file>
+            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/Styles.java</file>
+            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/base.css</file>
             <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/Alert/AlertController.java</file>
+            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/game_result.css</file>
         </group>
     </open-files>
 </project-private>
