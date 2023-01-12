@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tictactoe.gameresult;
+package tictactoe.game.result;
 
 import java.io.File;
 import java.net.URL;
@@ -45,10 +45,10 @@ public class WinnerPlayerController extends RouteViewController{
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        scene().getStylesheets().add(resourcesLoader().getCss(Styles.BASE_STYLE_STRING).toString());
+        scene().getStylesheets().add(resourcesLoader().getCss(Styles.GAME_RESULT_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
-         file = new File("");
-         media = new Media(file.toURI().toString());
+        file = new File("");
+        media = new Media(file.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
         videoView.setMediaPlayer(mediaPlayer);
