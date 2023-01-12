@@ -4,11 +4,12 @@
  */
 package tictactoe.base;
 
+import TicTacToeCommon.utils.MutableObservableValue;
+import TicTacToeCommon.utils.ObservableValue;
 import java.util.HashMap;
 import java.util.Map;
-import tictactoe.utils.MutableObservableValue;
+import javafx.application.Platform;
 import tictactoe.utils.ObjectUtils;
-import tictactoe.utils.ObservableValue;
 
 public class ViewModel<T> {
 
@@ -16,20 +17,31 @@ public class ViewModel<T> {
     private final Map<ViewModelListener<T>, ObservableValue.ListenCanceller> listeners = new HashMap<>();
 
     protected void updateState(T newState) {
-        observableValue.setValue(newState);
+        Platform.runLater(() -> {
+            observableValue.setValue(newState);
+        });
     }
 
     public ObservableValue<T> getObservableValue() {
         return observableValue;
     }
 
+    public void start() {}
+    
     public void bind(ViewModelListener<T> listener) {
+        boolean doStart = listeners.isEmpty();
         listeners.put(listener, observableValue.addListener(((newValue) -> {
             listener.didUpdateState(newValue);
         })));
+        if (doStart) start();
     }
 
     public void unbind(ViewModelListener<T> listener) {
         ObjectUtils.ifNotNull(listeners.get(listener), (e) -> e.cancel());
+        if (listeners.isEmpty()) {
+            stop();
+        }
     }
+    
+    public void stop() {}
 }

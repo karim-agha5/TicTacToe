@@ -11,7 +11,7 @@ import javafx.scene.effect.GaussianBlur;
 public abstract class UIHelper {
     public static Effect createBlurEffect() {
         ColorAdjust adj = new ColorAdjust(0, -0.3, -0.3, -0.6);
-        GaussianBlur blur = new GaussianBlur(100);
+        GaussianBlur blur = new GaussianBlur(30);
         adj.setInput(blur);
         return adj;
     }

@@ -4,6 +4,8 @@
  */
 package tictactoe.components.userview;
 
+import TicTacToeCommon.models.UserModel;
+import TicTacToeCommon.utils.ObservableValue;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -17,7 +19,7 @@ import tictactoe.base.ViewController;
 import tictactoe.resources.images.Images;
 import tictactoe.user.UserAccountViewController;
 
-public class UserViewController extends ViewController {
+public class UserViewController extends ViewController implements ObservableValue.Observer<UserModel> {
 
     @FXML
     private ImageView userImage;
@@ -25,6 +27,8 @@ public class UserViewController extends ViewController {
     private Label username;
     @FXML
     private Button authButton;
+    
+    private ObservableValue.ListenCanceller userModelSub;
 
     @Override
     public URL getViewUri() {
@@ -33,15 +37,35 @@ public class UserViewController extends ViewController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        userModelSub = handle().authenticationProvider().getUser().addListener(this);
         userImage.setImage(new Image(resourcesLoader().getImageAsStream(Images.USER_IC_STRING)));
-        username.setText("Local user");
         authButton.setText("Sign in");
+        
+        didChange(handle().authenticationProvider().getUser().getValue());
+        
         authButton.setOnAction((e) -> {
             router().push(new AuthenticationViewController());
         });
+        
         userImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             router().push(new UserAccountViewController());
             event.consume();
         });
+    }
+
+    @Override
+    public void didChange(UserModel user) {
+        if (user == null) {
+            username.setText("Local user");
+            authButton.setVisible(true);
+        } else {
+            username.setText(user.getName());
+            authButton.setVisible(false);
+        }
+    }
+    
+    @Override
+    public void onClosed() {
+        userModelSub.cancel();
     }
 }

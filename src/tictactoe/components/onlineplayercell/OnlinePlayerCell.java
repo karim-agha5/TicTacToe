@@ -4,10 +4,11 @@
  */
 package tictactoe.components.onlineplayercell;
 
+import TicTacToeCommon.models.UserModel;
 import javafx.scene.control.ListCell;
 import tictactoe.base.ViewController;
 
-public class OnlinePlayerCell extends ListCell<Object> {
+public class OnlinePlayerCell extends ListCell<UserModel> {
 
     private final PlayerTileViewController playerTileViewController;
     
@@ -17,7 +18,7 @@ public class OnlinePlayerCell extends ListCell<Object> {
     }
 
     @Override
-    public void updateItem(Object item, boolean empty) {
+    public void updateItem(UserModel item, boolean empty) {
         super.updateItem(item, empty);
         playerTileViewController.setPlayer(item);
         playerTileViewController.setSelected(isSelected());
