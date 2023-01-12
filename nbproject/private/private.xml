@@ -3,11 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/game/result/WinnerPlayerController.java</file>
-            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/Styles.java</file>
-            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/base.css</file>
-            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/Alert/AlertController.java</file>
-            <file>file:/D:/ITI_Mobile/git2/TicTacToe/src/tictactoe/resources/styles/game_result.css</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/nbproject/project.properties</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/nbproject/project.xml</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/src/tictactoe/base/ViewModel.java</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/nbproject/genfiles.properties</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/src/tictactoe/TicTacToe.java</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/nbproject/jfx-impl.xml</file>
+            <file>file:/Users/m-essam/Workspace/ITI/Java/TicTacToe/Git/TicTacToe/nbproject/build-impl.xml</file>
         </group>
     </open-files>
 </project-private>

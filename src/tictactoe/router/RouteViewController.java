@@ -9,13 +9,20 @@ import tictactoe.base.*;
 import javafx.stage.Stage;
 
 public abstract class RouteViewController<T> extends ViewController implements Route<T> {
+
     @Override
     public void setup(TicTacToeHandle handle, Stage stage) {
         attach(handle, stage);
     }
-    
+
     @Override
     public Scene createScene() throws Exception {
         return new Scene(createView());
     }
+
+    @Override
+    public void onPop() {
+        close();
+    }
+ 
 }

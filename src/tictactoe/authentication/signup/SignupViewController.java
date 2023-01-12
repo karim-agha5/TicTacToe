@@ -4,6 +4,7 @@
  */
 package tictactoe.authentication.signup;
 
+import TicTacToeCommon.models.requests.SignUpRequest;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -20,7 +21,6 @@ public class SignupViewController extends ViewController {
     private PasswordField password;
     @FXML
     private Button signupButton;
-    
 
     @Override
     public URL getViewUri() {
@@ -29,6 +29,8 @@ public class SignupViewController extends ViewController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        signupButton.setOnAction((e) -> {});
+        signupButton.setOnAction((e) -> {
+            handle().authenticationProvider().signUp(new SignUpRequest(username.getText(), password.getText()));
+        });
     }
 }

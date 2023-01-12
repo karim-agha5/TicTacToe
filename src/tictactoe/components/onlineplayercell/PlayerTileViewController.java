@@ -4,6 +4,7 @@
  */
 package tictactoe.components.onlineplayercell;
 
+import TicTacToeCommon.models.UserModel;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -24,14 +25,14 @@ public class PlayerTileViewController extends ViewController {
     @FXML
     private Label username;
 
-    private Object player;
+    private UserModel player;
 
     @Override
     public URL getViewUri() {
         return getClass().getResource("PlayerTileView.fxml");
     }
 
-    public void setPlayer(Object player) {
+    public void setPlayer(UserModel player) {
         this.player = player;
         setPlayerUI(player);
     }
@@ -42,8 +43,13 @@ public class PlayerTileViewController extends ViewController {
         setPlayerUI(player);
     }
 
-    private void setPlayerUI(Object player) {
-        username.setText("username");
+    private void setPlayerUI(UserModel player) {
+        if (player != null) {
+            username.setText(player.getName());
+            view().setVisible(true);
+        } else {
+            view().setVisible(false);
+        }
     }
 
     public void setSelected(boolean selected) {
