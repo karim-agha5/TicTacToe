@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tictactoe.gameresult;
+package tictactoe.game.result;
 
 import java.io.File;
 import java.net.URL;

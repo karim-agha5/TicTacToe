@@ -20,7 +20,7 @@ public abstract class ViewController {
 
     protected static final Logger logger = Logger.getLogger(ViewController.class.getName());
     private TicTacToeHandle handle;
-    private Stage stage;
+    public Stage stage;
     private URL location;
     private ResourceBundle resources;
 
