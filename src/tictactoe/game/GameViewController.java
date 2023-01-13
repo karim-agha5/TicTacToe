@@ -4,9 +4,14 @@
  */
 package tictactoe.game;
 
+import TicTacToeCommon.models.MoveModel;
+import TicTacToeCommon.models.events.GameEvent;
+import TicTacToeCommon.services.engine.piece.League;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import tictactoe.game.providers.GameProvider;
 import tictactoe.resources.styles.Styles;
 import tictactoe.router.RouteViewController;
 import tictactoe.utils.ObjectUtils;
@@ -62,6 +68,14 @@ public class GameViewController extends RouteViewController {
     @FXML
     private Rectangle finishLineTopRight;
 
+    private final List<Pane> squares = new LinkedList<>();
+
+    private final GameProvider gameProvider;
+
+    public GameViewController(GameProvider gameProvider) {
+        this.gameProvider = gameProvider;
+    }
+
     @Override
     public URL getViewUri() {
         return getClass().getResource("GameView.fxml");
@@ -71,37 +85,84 @@ public class GameViewController extends RouteViewController {
     public void initialize(URL location, ResourceBundle resources) {
         scene().getStylesheets().add(resourcesLoader().getCss(Styles.GAME_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
                 ImageView image = new ImageView();
-                Node node = new StackPane(image);
+                Pane node = new StackPane(image);
                 StackPane.setAlignment(image, Pos.CENTER);
                 gameGrid.add(node, x, y);
                 node.setOnMouseClicked(this::handleOnGridClicked);
+                squares.add(node);
             }
         }
-        backButton.setOnAction(router()::pop);
-        for (Rectangle finishLine: getFinishLines()) {
+        backButton.setOnAction((e) -> gameProvider.withdraw());
+
+        for (Rectangle finishLine : getFinishLines()) {
             finishLine.setVisible(false);
         }
-        
+        gameProvider.getEvents().addListener((event) -> {
+            if (event instanceof GameEvent.Moved) {
+                handleMove(((GameEvent.Moved) event).getMove());
+            } else if (event instanceof GameEvent.Ended) {
+                router().pop(false);
+            } else if (event instanceof GameEvent.Withdraw) {
+                // handle opponent withdraw
+            } else if (event instanceof GameEvent.Won) {
+                // handle winning
+            } else if (event instanceof GameEvent.Lost) {
+                // handle losing
+            }
+        });
+        gameProvider.getLastMoveResult().addListener((isValid) -> {
+            if (isValid == false) {
+                uIAlert().showErrorDialog("Invalid move", "Invalid move made");
+            }
+        });
 
+        gameProvider.getCanInput().addListener((isValid) -> {
+            if (isValid == false) {
+                uIAlert().showErrorDialog("Invalid move", "Invalid move made");
+            }
+        });
     }
-    
+
+    @Override
+    public void onClosed() {
+        gameProvider.close();
+    }
+
     private Rectangle[] getFinishLines() {
         return new Rectangle[]{
-            finishLineLeft, finishLineMiddleV, finishLineRight, 
-            finishLineTop, finishLineMiddleH, finishLineBottom, 
+            finishLineLeft, finishLineMiddleV, finishLineRight,
+            finishLineTop, finishLineMiddleH, finishLineBottom,
             finishLineTopLeft, finishLineTopRight
         };
     }
-    
+
     private void handleOnGridClicked(MouseEvent event) {
-        Pane source = (Pane)event.getSource();
-        source.setOnMouseClicked(null);
-        source.getChildren().get(0).getStyleClass().add("XImage");
-        int colIndex = ObjectUtils.getOrElse(GridPane.getColumnIndex(source), 0);
-        int colRow = ObjectUtils.getOrElse(GridPane.getRowIndex(source), 0);
-        logger.log(Level.INFO, "Pressed at {0} {1}", new Object[]{colIndex, colRow});
+        if (gameProvider.getCanInput().getValue()) {
+            Pane source = (Pane) event.getSource();
+            int colIndex = ObjectUtils.getOrElse(GridPane.getColumnIndex(source), 0);
+            int colRow = ObjectUtils.getOrElse(GridPane.getRowIndex(source), 0);
+            int index = colRow * 3 + colIndex;
+            gameProvider.makeMove((byte) index);
+            logger.log(Level.INFO, "Pressed at {0} {1}", new Object[]{colIndex, colRow});
+        }
+    }
+
+    private void handleMove(MoveModel move) {
+        Pane pane = squares.get(move.getSpacePosition());
+        pane.setOnMouseClicked(null);
+        League league;
+        if (move.getPlayerId().equals(gameProvider.getPlayer1().getId())) {
+            league = gameProvider.getPlayer1League();
+        } else {
+            league = gameProvider.getPlayer2League();
+        }
+        if (league.equals(league.Cross)) {
+            pane.getChildren().get(0).getStyleClass().add("XImage");
+        } else {
+            pane.getChildren().get(0).getStyleClass().add("OImage");
+        }
     }
 }

@@ -4,6 +4,12 @@
  */
 package tictactoe;
 
+import TicTacToeCommon.models.GameOfferAnswer;
+import TicTacToeCommon.models.UserModel;
+import TicTacToeCommon.models.events.GameEvent;
+import TicTacToeCommon.models.requests.JoinGameRequest;
+import TicTacToeCommon.models.requests.StartGameRequest;
+import TicTacToeCommon.models.responses.JoinGameResponse;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,11 +20,14 @@ import javafx.stage.Stage;
 import tictactoe.authentication.AuthenticationProvider;
 import tictactoe.base.SocketHandler;
 import tictactoe.base.TicTacToeHandle;
+import tictactoe.game.GameViewController;
+import tictactoe.game.providers.OnlineGameHandler;
 import tictactoe.landing.LandingViewController;
 import tictactoe.resources.ResourcesLoader;
 import tictactoe.resources.styles.Styles;
 import tictactoe.router.StackRouter;
 import tictactoe.router.Router;
+import tictactoe.utils.UIAlert;
 
 public class TicTacToe extends Application implements TicTacToeHandle {
 
@@ -76,6 +85,17 @@ public class TicTacToe extends Application implements TicTacToeHandle {
         router = new StackRouter(this, stage);
         router.push(new LandingViewController());
         stage.show();
+        final UIAlert alert = new UIAlert(stage);
+        socketHandler.getMessage().addListener((newValue) -> {
+            if (newValue instanceof JoinGameRequest) {
+                UserModel player = ((JoinGameRequest) newValue).getPlayer();
+                Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " want to play with you. Would you like to start game with him?");
+                socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
+            } else if (newValue instanceof GameEvent.Started) {
+                GameEvent.Started event = (GameEvent.Started) newValue;
+                router.push(new GameViewController(new OnlineGameHandler(event, socketHandler, authenticationProvider)));
+            }
+        });
     }
 
     @Override
