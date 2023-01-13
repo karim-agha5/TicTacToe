@@ -1,6 +1,7 @@
 package tictactoe.game.replay;
 
 import TicTacToeCommon.models.MoveModel;
+import TicTacToeCommon.models.PlayerModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -73,12 +74,19 @@ public class GameReplayViewController extends RouteViewController {
 
     private List<MoveModel> moves;
 
+    private PlayerModel player1Model;
+
+    private PlayerModel player2Model;
+
     public GameReplayViewController() {
     }
 
-    public GameReplayViewController(String gameFileId) throws IOException, ClassNotFoundException {
+    public GameReplayViewController(String gameFileId, PlayerModel player1Model, PlayerModel player2Model)
+            throws IOException, ClassNotFoundException {
         this.gameFileId = gameFileId;
         this.moves = new GameRecordService().readGame(gameFileId);
+        this.player1Model = player1Model;
+        this.player2Model = player2Model;
     }
 
     @Override
@@ -103,6 +111,9 @@ public class GameReplayViewController extends RouteViewController {
         for (Rectangle finishLine : getFinishLines()) {
             finishLine.setVisible(false);
         }
+
+        player1Username.setText(player1Model.getName());
+        player2Username.setText(player2Model.getName());
 
         runTheRecord(moves);
 
