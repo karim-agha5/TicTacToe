@@ -7,11 +7,14 @@ package tictactoe.game;
 import TicTacToeCommon.models.MoveModel;
 import TicTacToeCommon.models.events.GameEvent;
 import TicTacToeCommon.services.engine.piece.League;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -97,7 +100,6 @@ public class GameViewController extends RouteViewController {
         for (Rectangle finishLine : getFinishLines()) {
             finishLine.setVisible(false);
         }
-
         gameProvider.getEvents().addListener((event) -> {
             if (event instanceof GameEvent.Moved) {
                 handleMove(((GameEvent.Moved) event).getMove());
