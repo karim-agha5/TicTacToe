@@ -56,6 +56,8 @@ public class GameViewController extends RouteViewController {
     @FXML
     private Label timer;
     @FXML
+    private ImageView timerIcon;
+    @FXML
     private Button recordButton;
     @FXML
     private Rectangle finishLineLeft;
@@ -108,8 +110,8 @@ public class GameViewController extends RouteViewController {
             gameProvider.onBoardClicked();
         });
 
-//        backButton.setOnAction((e) -> gameProvider.withdraw());
-        backButton.setOnAction(router()::pop);
+        backButton.setOnAction((e) -> gameProvider.withdraw());
+//        backButton.setOnAction(router()::pop);
 
         player1Username.setText(gameProvider.getPlayer1().getName());
         player2Username.setText(gameProvider.getPlayer2().getName());
@@ -127,32 +129,14 @@ public class GameViewController extends RouteViewController {
                     handleMove(((GameEvent.Moved) event).getMove());
                 } else if (event instanceof GameEvent.Ended) {
                     router().pop(false);
+                } else if (event instanceof GameEvent.Draw) {
+                    finishSequence(new GameResultViewController());
                 } else if (event instanceof GameEvent.Withdraw) {
-                    router().replace(new GameResultViewController(true));
+                    router().replace(new GameResultViewController(gameProvider.getWinner(), true));
                 } else if (event instanceof GameEvent.Won) {
-                    showFinishLine();
-                    transition = handle().submitJob(() -> {
-                        try {
-                            Thread.sleep(3000);
-                            Platform.runLater(() -> {
-                                router().replace(new GameResultViewController(gameProvider.getWinner(), true));
-                            });
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
+                    finishSequence(new GameResultViewController(gameProvider.getWinner(), true));
                 } else if (event instanceof GameEvent.Lost) {
-                    showFinishLine();
-                    transition = handle().submitJob(() -> {
-                        try {
-                            Thread.sleep(3000);
-                            Platform.runLater(() -> {
-                                router().replace(new GameResultViewController(false));
-                            });
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
+                    finishSequence(new GameResultViewController(false));
                 }
             });
         });
@@ -165,8 +149,15 @@ public class GameViewController extends RouteViewController {
             });
         });
 
-        gameProvider.getCanInput().addListener((isValid) -> {
+        gameProvider.getCurrentPlayer().addListener((newValue) -> {
             Platform.runLater(() -> {
+                if (Objects.equals(newValue, GameProvider.FIRST_PLAYER)) {
+                    timer.setText(gameProvider.getPlayer1().getName());
+                    timerIcon.getStyleClass().setAll(getCssClassFromLeague(gameProvider.getPlayer1League()));
+                } else {
+                    timer.setText(gameProvider.getPlayer2().getName());
+                    timerIcon.getStyleClass().setAll(getCssClassFromLeague(gameProvider.getPlayer2League()));
+                }
             });
         });
 
@@ -180,6 +171,21 @@ public class GameViewController extends RouteViewController {
         });
 
         gameProvider.start();
+    }
+
+    private void finishSequence(RouteViewController route) {
+        showFinishLine();
+        backButton.setOnAction(null);
+        transition = handle().submitJob(() -> {
+            try {
+                Thread.sleep(3000);
+                Platform.runLater(() -> {
+                    router().replace(route);
+                });
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
     @Override
@@ -204,7 +210,7 @@ public class GameViewController extends RouteViewController {
             int colIndex = ObjectUtils.getOrElse(GridPane.getColumnIndex(source), 0);
             int colRow = ObjectUtils.getOrElse(GridPane.getRowIndex(source), 0);
             int index = colRow * 3 + colIndex;
-            gameProvider.makeMove((byte) index);
+            gameProvider.makeMove(index);
             logger.log(Level.INFO, "Pressed at {0} {1}", new Object[]{colIndex, colRow});
         }
     }

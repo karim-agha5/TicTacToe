@@ -7,4 +7,5 @@ package tictactoe.resources.videos;
 public interface Videos {
     static final String WINNER_STRING = "Winner.mp4";
     static final String LOSER_STRING = "Winner.mp4";
+    static final String DRAW_STRING = "Winner.mp4";
 }

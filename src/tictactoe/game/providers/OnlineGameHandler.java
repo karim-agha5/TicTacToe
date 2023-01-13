@@ -31,6 +31,10 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
         connectedCanceller = socketHandler.getConnected().addListener(this);
         eventsCanceller = socketHandler.getMessage().addListener(this);
         winner = player1;
+    }
+
+    @Override
+    public void start() {
         if (player1League == League.Cross) {
             canInput.setValue(true);
             currentPlayer.setValue(FIRST_PLAYER);
@@ -41,11 +45,7 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
     }
 
     @Override
-    public void start() {
-    }
-
-    @Override
-    public void makeMove(Byte position) {
+    public void makeMove(Integer position) {
         socketHandler.send(new GameMoveRequest(gameId, position));
     }
 

@@ -27,7 +27,7 @@ public class MultiplayerGameHandler extends LocalGameHandler {
     }
     
     @Override
-    public void makeMove(Byte position) {
+    public void makeMove(Integer position) {
         try {
             makeUserMove(position);
         } catch (InvalidMoveException e) {

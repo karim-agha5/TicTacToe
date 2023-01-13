@@ -25,7 +25,7 @@ import tictactoe.utils.UIHelper;
  *
  * @author ITI
  */
-public class GameResultViewController extends RouteViewController{
+public class GameResultViewController extends RouteViewController {
 
     @FXML
     private MediaView videoView;
@@ -35,36 +35,47 @@ public class GameResultViewController extends RouteViewController{
     private Region background;
     @FXML
     private Label playerLabel;
-        
-    private final boolean isWin;
-    
+
+    private final Boolean isWin;
+
     private final UserModel player;
-    
+
     public GameResultViewController(UserModel player, boolean isWin) {
         this.isWin = isWin;
         this.player = player;
     }
-    
+
     public GameResultViewController(boolean isWin) {
         this.isWin = isWin;
         this.player = null;
     }
-    
+
+    public GameResultViewController() {
+        this.isWin = null;
+        this.player = null;
+    }
+
     @Override
     public URL getViewUri() {
         return getClass().getResource("GameResultView.fxml");
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         scene().getStylesheets().add(resourcesLoader().getCss(Styles.GAME_RESULT_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
-        String playerName = "You";
-        if (player != null) {
-            playerName = player.getName();
+        final URL file;
+        if (isWin != null) {
+            String playerName = "You";
+            if (player != null) {
+                playerName = player.getName();
+            }
+            playerLabel.setText(playerName + " " + (isWin ? "Won!" : "Lost!"));
+            file = resourcesLoader().getVideo(isWin ? Videos.WINNER_STRING : Videos.LOSER_STRING);
+        } else {
+            playerLabel.setText("Draw!");
+            file = resourcesLoader().getVideo(Videos.DRAW_STRING);
         }
-        playerLabel.setText(playerName + " " + (isWin ? "Won!" : "Lost!"));
-        URL file = resourcesLoader().getVideo(isWin ? Videos.WINNER_STRING : Videos.LOSER_STRING);
         Media media = new Media(file.toExternalForm());
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.play();
@@ -72,7 +83,7 @@ public class GameResultViewController extends RouteViewController{
         backButton.setOnAction((e) -> {
             router().pop();
         });
-    }    
+    }
 
     @Override
     public void onClosed() {

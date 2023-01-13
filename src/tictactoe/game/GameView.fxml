@@ -143,12 +143,12 @@
                      <children>
                         <HBox alignment="CENTER">
                            <children>
-                              <Label maxWidth="1.7976931348623157E308" styleClass="TileLabel" text="Timer" HBox.hgrow="ALWAYS">
+                              <Label maxWidth="1.7976931348623157E308" styleClass="TileLabel" text="Next Player" HBox.hgrow="ALWAYS">
                                  <font>
                                     <Font name="System Bold" size="24.0" />
                                  </font>
                               </Label>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="TimerImage" />
+                              <ImageView fx:id="timerIcon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="TimerImage" />
                            </children>
                         </HBox>
                         <Label fx:id="timer" alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="RoundedBar" text="username">

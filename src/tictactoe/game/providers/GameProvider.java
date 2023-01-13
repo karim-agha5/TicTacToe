@@ -42,7 +42,7 @@ public interface GameProvider {
 
     void start();
     
-    void makeMove(Byte position);
+    void makeMove(Integer position);
 
     void onBoardClicked();
     

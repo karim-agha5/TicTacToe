@@ -90,7 +90,7 @@ public class TicTacToe extends Application implements TicTacToeHandle {
             Platform.runLater(() -> {
                 if (newValue instanceof JoinGameRequest) {
                     UserModel player = ((JoinGameRequest) newValue).getPlayer();
-                    Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " want to play with you. Would you like to start game with him?");
+                    Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " wants to play with you. Would you like to start game with him?");
                     System.out.println(result);
                     socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
                 } else if (newValue instanceof GameEvent.Started) {

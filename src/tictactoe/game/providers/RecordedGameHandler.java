@@ -32,16 +32,17 @@ public class RecordedGameHandler extends GameHandler {
                 gameRecord.getPlayer1League(),
                 gameRecord.getPlayer2());
         this.gameRecord = gameRecord;
+        
+    }
+
+    @Override
+    public void start() {
         canInput.setValue(true);
         currentPlayer.setValue(FIRST_PLAYER);
     }
 
     @Override
-    public void start() {
-    }
-
-    @Override
-    public void makeMove(Byte position) {
+    public void makeMove(Integer position) {
     }
 
     @Override

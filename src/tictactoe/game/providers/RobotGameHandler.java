@@ -38,7 +38,7 @@ public class RobotGameHandler extends LocalGameHandler {
     }
 
     @Override
-    public void makeMove(Byte position) {
+    public void makeMove(Integer position) {
         try {
             if (!makeUserMove(position)) {
                 makeAIMove(difficulty);

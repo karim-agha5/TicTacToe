@@ -39,7 +39,7 @@ public abstract class LocalGameHandler extends GameHandler {
         currentPlayer.setValue(FIRST_PLAYER);
     }
 
-    protected boolean makeUserMove(Byte position) throws TicTacToeEngine.InvalidMoveException {
+    protected boolean makeUserMove(Integer position) throws TicTacToeEngine.InvalidMoveException {
         UserModel player = getCurrentUser();
         TicTacToeEngine.GameResult result = engine.makeMove(player.getId(), position);
         return makeMove(player, result);
@@ -54,7 +54,7 @@ public abstract class LocalGameHandler extends GameHandler {
     private boolean makeMove(UserModel player, TicTacToeEngine.GameResult result) throws TicTacToeEngine.InvalidMoveException {
         Move postion = engine.getMoves().get(engine.getMoves().size() - 1);
         MoveModel move = new MoveModel(UUID.randomUUID().toString(),
-                player.getId(), gameId, (byte) postion.getIndex(),
+                player.getId(), gameId, postion.getIndex(),
                 new Date().getTime());
         moves.add(move);
         events.setValue(new GameEvent.Moved(gameId, player.getId(), move));
