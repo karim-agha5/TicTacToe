@@ -7,17 +7,18 @@ package tictactoe.game;
 import TicTacToeCommon.models.MoveModel;
 import TicTacToeCommon.models.events.GameEvent;
 import TicTacToeCommon.services.engine.piece.League;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -28,6 +29,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import tictactoe.game.providers.GameProvider;
+import tictactoe.game.result.GameResultViewController;
 import tictactoe.resources.styles.Styles;
 import tictactoe.router.RouteViewController;
 import tictactoe.utils.ObjectUtils;
@@ -46,7 +48,11 @@ public class GameViewController extends RouteViewController {
     @FXML
     private Label player1Username;
     @FXML
+    private ImageView player1Icon;
+    @FXML
     private Label player2Username;
+    @FXML
+    private ImageView player2Icon;
     @FXML
     private Label timer;
     @FXML
@@ -67,6 +73,8 @@ public class GameViewController extends RouteViewController {
     private Rectangle finishLineTopLeft;
     @FXML
     private Rectangle finishLineTopRight;
+
+    private Future<?> transition;
 
     private final List<Pane> squares = new LinkedList<>();
 
@@ -95,40 +103,91 @@ public class GameViewController extends RouteViewController {
                 squares.add(node);
             }
         }
-        backButton.setOnAction((e) -> gameProvider.withdraw());
+
+        gameGrid.setOnMouseClicked((e) -> {
+            gameProvider.onBoardClicked();
+        });
+
+//        backButton.setOnAction((e) -> gameProvider.withdraw());
+        backButton.setOnAction(router()::pop);
+
+        player1Username.setText(gameProvider.getPlayer1().getName());
+        player2Username.setText(gameProvider.getPlayer2().getName());
+
+        player1Icon.getStyleClass().setAll(getCssClassFromLeague(gameProvider.getPlayer1League()));
+        player2Icon.getStyleClass().setAll(getCssClassFromLeague(gameProvider.getPlayer2League()));
 
         for (Rectangle finishLine : getFinishLines()) {
             finishLine.setVisible(false);
         }
+
         gameProvider.getEvents().addListener((event) -> {
-            if (event instanceof GameEvent.Moved) {
-                handleMove(((GameEvent.Moved) event).getMove());
-            } else if (event instanceof GameEvent.Ended) {
-                router().pop(false);
-            } else if (event instanceof GameEvent.Withdraw) {
-                // handle opponent withdraw
-            } else if (event instanceof GameEvent.Won) {
-                // handle winning
-            } else if (event instanceof GameEvent.Lost) {
-                // handle losing
-            }
+            Platform.runLater(() -> {
+                if (event instanceof GameEvent.Moved) {
+                    handleMove(((GameEvent.Moved) event).getMove());
+                } else if (event instanceof GameEvent.Ended) {
+                    router().pop(false);
+                } else if (event instanceof GameEvent.Withdraw) {
+                    router().replace(new GameResultViewController(true));
+                } else if (event instanceof GameEvent.Won) {
+                    showFinishLine();
+                    transition = handle().submitJob(() -> {
+                        try {
+                            Thread.sleep(3000);
+                            Platform.runLater(() -> {
+                                router().replace(new GameResultViewController(gameProvider.getWinner(), true));
+                            });
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                } else if (event instanceof GameEvent.Lost) {
+                    showFinishLine();
+                    transition = handle().submitJob(() -> {
+                        try {
+                            Thread.sleep(3000);
+                            Platform.runLater(() -> {
+                                router().replace(new GameResultViewController(false));
+                            });
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(GameViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                }
+            });
         });
+
         gameProvider.getLastMoveResult().addListener((isValid) -> {
-            if (isValid == false) {
-                uIAlert().showErrorDialog("Invalid move", "Invalid move made");
-            }
+            Platform.runLater(() -> {
+                if (isValid == false) {
+                    uIAlert().showErrorDialog("Invalid move", "Invalid move made");
+                }
+            });
         });
 
         gameProvider.getCanInput().addListener((isValid) -> {
-            if (isValid == false) {
-                uIAlert().showErrorDialog("Invalid move", "Invalid move made");
+            Platform.runLater(() -> {
+            });
+        });
+
+        recordButton.setOnAction((event) -> {
+            gameProvider.setIsRecording(!gameProvider.getIsRecording());
+            if (gameProvider.getIsRecording()) {
+                recordButton.setText("Recording");
+            } else {
+                recordButton.setText("Not recording");
             }
         });
+
+        gameProvider.start();
     }
 
     @Override
     public void onClosed() {
         gameProvider.close();
+        if (transition != null) {
+            transition.cancel(true);
+        }
     }
 
     private Rectangle[] getFinishLines() {
@@ -159,10 +218,65 @@ public class GameViewController extends RouteViewController {
         } else {
             league = gameProvider.getPlayer2League();
         }
+        pane.setUserData(move.getPlayerId());
+        pane.getChildren().get(0).getStyleClass().add(getCssClassFromLeague(league));
+    }
+
+    private void showFinishLine() {
+        Rectangle line = getRectangle();
+        if (line != null) {
+            line.setVisible(true);
+        }
+    }
+
+    private Rectangle getRectangle() {
+        if (areTrue(squares.get(0), squares.get(1), squares.get(2))) {
+            return finishLineTop;
+        }
+        if (areTrue(squares.get(3), squares.get(4), squares.get(5))) {
+            return finishLineMiddleH;
+        }
+        if (areTrue(squares.get(6), squares.get(7), squares.get(8))) {
+            return finishLineBottom;
+        }
+
+        if (areTrue(squares.get(0), squares.get(3), squares.get(6))) {
+            return finishLineLeft;
+        }
+        if (areTrue(squares.get(1), squares.get(4), squares.get(7))) {
+            return finishLineMiddleV;
+        }
+        if (areTrue(squares.get(2), squares.get(5), squares.get(8))) {
+            return finishLineRight;
+        }
+
+        if (areTrue(squares.get(0), squares.get(4), squares.get(8))) {
+            return finishLineTopLeft;
+        }
+
+        if (areTrue(squares.get(2), squares.get(4), squares.get(6))) {
+            return finishLineTopRight;
+        }
+        return null;
+    }
+
+    private boolean areTrue(Pane... squares) {
+        Object data = null;
+        for (Pane pane : squares) {
+            Object d = pane.getUserData();
+            if (d == null || (data != null && !Objects.equals(d, data))) {
+                return false;
+            }
+            data = d;
+        }
+        return true;
+    }
+
+    private String getCssClassFromLeague(League league) {
         if (league.equals(league.Cross)) {
-            pane.getChildren().get(0).getStyleClass().add("XImage");
+            return "XImage";
         } else {
-            pane.getChildren().get(0).getStyleClass().add("OImage");
+            return "OImage";
         }
     }
 }

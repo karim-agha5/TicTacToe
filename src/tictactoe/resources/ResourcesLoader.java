@@ -20,6 +20,10 @@ public interface ResourcesLoader {
         return ResourcesLoader.class.getResourceAsStream("images/" + name);
     }
     
+    default InputStream getVideoAsStream(String name) {
+        return ResourcesLoader.class.getResourceAsStream("videos/" + name);
+    }
+    
     default InputStream getFontAsStream(String name) {
         return ResourcesLoader.class.getResourceAsStream("fonts/" + name);
     }
@@ -30,6 +34,10 @@ public interface ResourcesLoader {
 
     default URL getImage(String name) {
         return ResourcesLoader.class.getResource("images/" + name);
+    }
+    
+    default URL getVideo(String name) {
+        return ResourcesLoader.class.getResource("videos/" + name);
     }
     
     default URL getFont(String name) {

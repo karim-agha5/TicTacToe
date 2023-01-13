@@ -21,3 +21,9 @@ and open the template in the editor.
     -fx-background-color: white;
 }
 
+
+.ResultLabel .text {
+    -fx-fill: red;
+    -fx-stroke: #ff3333;
+    -fx-stroke-width: 4px;
+}

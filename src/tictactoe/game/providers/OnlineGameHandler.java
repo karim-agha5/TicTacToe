@@ -24,7 +24,7 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
     private final SocketHandler socketHandler;
     private final ObservableValue.ListenCanceller connectedCanceller;
     private final ObservableValue.ListenCanceller eventsCanceller;
-    
+
     public OnlineGameHandler(GameEvent.Started event, SocketHandler socketHandler, AuthenticationProvider authenticationProvider) {
         super(event.getGameId(), authenticationProvider.getUser().getValue(), event.getLeague(), event.getPlayer());
         this.socketHandler = socketHandler;
@@ -33,11 +33,15 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
         winner = player1;
         if (player1League == League.Cross) {
             canInput.setValue(true);
-            currentPlayer.setValue(1);
+            currentPlayer.setValue(FIRST_PLAYER);
         } else {
             canInput.setValue(false);
-            currentPlayer.setValue(2);
+            currentPlayer.setValue(SECOND_PLAYER);
         }
+    }
+
+    @Override
+    public void start() {
     }
 
     @Override
@@ -49,11 +53,11 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
     public void withdraw() {
         socketHandler.send(new GameWithdrawRequest(gameId));
     }
-    
+
     @Override
     public void didChange(Object newValue) {
         if (newValue instanceof Boolean) {
-            if ((Boolean)newValue != true) {
+            if ((Boolean) newValue != true) {
                 events.setValue(new GameEvent.Ended(gameId));
             }
         } else if (newValue instanceof GameEvent) {
@@ -62,10 +66,10 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
                 MoveModel move = ((GameEvent.Moved) newValue).getMove();
                 moves.add(move);
                 if (player1.getId().equals(move.getPlayerId())) {
-                    currentPlayer.setValue(2);
+                    currentPlayer.setValue(SECOND_PLAYER);
                     canInput.setValue(false);
                 } else {
-                    currentPlayer.setValue(1);
+                    currentPlayer.setValue(FIRST_PLAYER);
                     canInput.setValue(true);
                 }
             }
@@ -85,8 +89,9 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
     }
 
     @Override
-    public void close() {
+    public void onClosed() {
         connectedCanceller.cancel();
         eventsCanceller.cancel();
     }
+
 }

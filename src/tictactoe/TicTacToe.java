@@ -8,13 +8,13 @@ import TicTacToeCommon.models.GameOfferAnswer;
 import TicTacToeCommon.models.UserModel;
 import TicTacToeCommon.models.events.GameEvent;
 import TicTacToeCommon.models.requests.JoinGameRequest;
-import TicTacToeCommon.models.requests.StartGameRequest;
 import TicTacToeCommon.models.responses.JoinGameResponse;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tictactoe.authentication.AuthenticationProvider;
@@ -37,12 +37,12 @@ public class TicTacToe extends Application implements TicTacToeHandle {
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     private final ResourcesLoader resourcesLoader = new ResourcesLoader() {
     };
-    
+
     public TicTacToe() {
         socketHandler = new SocketHandler(this);
         authenticationProvider = new AuthenticationProvider(socketHandler);
     }
-    
+
     @Override
     public Router router() {
         return router;
@@ -68,17 +68,17 @@ public class TicTacToe extends Application implements TicTacToeHandle {
         scene.getStylesheets().add(resourcesLoader.getCss(Styles.BASE_STYLE_STRING).toString());
         scene.getStylesheets().add(resourcesLoader.getCss(Styles.TABVIEW_STYLE_STRING).toString());
     }
-    
+
     @Override
     public Future<?> submitJob(Runnable job) {
         return executorService.submit(job);
     }
-    
+
     @Override
     public <T> Future<T> submitJob(Callable<T> job) {
         return executorService.submit(job);
     }
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         setupStage(stage);
@@ -87,14 +87,17 @@ public class TicTacToe extends Application implements TicTacToeHandle {
         stage.show();
         final UIAlert alert = new UIAlert(stage);
         socketHandler.getMessage().addListener((newValue) -> {
-            if (newValue instanceof JoinGameRequest) {
-                UserModel player = ((JoinGameRequest) newValue).getPlayer();
-                Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " want to play with you. Would you like to start game with him?");
-                socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
-            } else if (newValue instanceof GameEvent.Started) {
-                GameEvent.Started event = (GameEvent.Started) newValue;
-                router.push(new GameViewController(new OnlineGameHandler(event, socketHandler, authenticationProvider)));
-            }
+            Platform.runLater(() -> {
+                if (newValue instanceof JoinGameRequest) {
+                    UserModel player = ((JoinGameRequest) newValue).getPlayer();
+                    Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " want to play with you. Would you like to start game with him?");
+                    System.out.println(result);
+                    socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
+                } else if (newValue instanceof GameEvent.Started) {
+                    GameEvent.Started event = (GameEvent.Started) newValue;
+                    router.push(new GameViewController(new OnlineGameHandler(event, socketHandler, authenticationProvider)));
+                }
+            });
         });
     }
 
@@ -103,17 +106,17 @@ public class TicTacToe extends Application implements TicTacToeHandle {
         socketHandler.stop();
         executorService.shutdown();
     }
-    
+
     private void setupStage(Stage stage) {
         stage.setMinHeight(720);
         stage.setMinWidth(1024);
     }
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

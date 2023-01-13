@@ -22,6 +22,7 @@ public abstract class RouteViewController<T> extends ViewController implements R
 
     @Override
     public void onPop() {
+        System.out.println("popped " + getClass().getName());
         close();
     }
  

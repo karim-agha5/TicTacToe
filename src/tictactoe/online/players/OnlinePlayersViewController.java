@@ -7,6 +7,7 @@ package tictactoe.online.players;
 import TicTacToeCommon.models.UserModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,7 +33,7 @@ public class OnlinePlayersViewController extends RouteViewController {
     private ListView<UserModel> playersList;
 
     private OnlinePlayersViewModel viewModel;
-    
+
     private OnlineRequestViewModel requestViewModel;
 
     @Override
@@ -66,20 +67,24 @@ public class OnlinePlayersViewController extends RouteViewController {
     }
 
     public void listResult(Boolean newState) {
-        if (newState == false) {
-            uIAlert().showErrorDialog("Error", "Error loading online players");
-            router().pop(false);
-        } else if (newState == true) {
-            uIAlert().close();
-        }
+        Platform.runLater(() -> {
+            if (newState == false) {
+                uIAlert().showErrorDialog("Error", "Error loading online players");
+                router().pop(false);
+            } else if (newState == true) {
+                uIAlert().close();
+            }
+        });
     }
-    
+
     public void requesttResult(Boolean newState) {
-        if (newState == false) {
-            uIAlert().showErrorDialog("Failed", "Player refused to play");
-        } else if (newState == true) {
-            uIAlert().close();
-        }
+        Platform.runLater(() -> {
+            if (newState == false) {
+                uIAlert().showErrorDialog("Failed", "Player refused to play");
+            } else if (newState == true) {
+                uIAlert().close();
+            }
+        });
     }
 
     @Override

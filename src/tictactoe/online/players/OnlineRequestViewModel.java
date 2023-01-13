@@ -9,7 +9,6 @@ import TicTacToeCommon.models.base.RemoteSendable;
 import TicTacToeCommon.models.requests.StartGameRequest;
 import TicTacToeCommon.models.responses.StartGameResponse;
 import TicTacToeCommon.utils.ObservableValue;
-import javafx.application.Platform;
 import tictactoe.base.SocketHandler;
 import tictactoe.base.ViewModel;
 
@@ -31,9 +30,7 @@ public class OnlineRequestViewModel extends ViewModel<Boolean> implements Observ
     public void didChange(RemoteSendable message) {
         if (message instanceof StartGameResponse) {
             StartGameResponse response = (StartGameResponse) message;
-            Platform.runLater(() -> {
-                updateState(response.isStatus() && response.getData());
-            });
+            updateState(response.isStatus() && response.getData());
         }
     }
 

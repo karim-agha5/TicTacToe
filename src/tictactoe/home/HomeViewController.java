@@ -13,7 +13,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+import tictactoe.authentication.AuthenticationViewController;
 import tictactoe.components.userview.UserViewController;
+import tictactoe.game.GameViewController;
+import tictactoe.game.providers.MultiplayerGameHandler;
 import tictactoe.offline.pc.selector.OfflinePcSelectorViewController;
 import tictactoe.online.players.OnlinePlayersViewController;
 import tictactoe.resources.styles.Styles;
@@ -55,7 +58,18 @@ public class HomeViewController extends RouteViewController {
         });
         
         online1v1.setOnAction((e) -> {
-            router().push(new OnlinePlayersViewController());
+            if (handle().authenticationProvider().getIsAuth().getValue()) {
+                router().push(new OnlinePlayersViewController());
+            } else {
+                Boolean result = uIAlert().showPromptDialog("Not logged in", "You must login to play online. Login?");
+                if (result == true) {
+                    router().push(new AuthenticationViewController());
+                }
+            }
+        });
+        
+        offline1v1.setOnAction((e) -> {
+            router().push(new GameViewController(new MultiplayerGameHandler(handle().authenticationProvider())));
         });
     }
 }

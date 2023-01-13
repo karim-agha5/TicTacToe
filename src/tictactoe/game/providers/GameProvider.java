@@ -16,6 +16,9 @@ import java.util.List;
  * @author m-essam
  */
 public interface GameProvider {
+    
+    public static final Integer FIRST_PLAYER = 0;
+    public static final Integer SECOND_PLAYER = 1;
 
     ObservableValue<GameEvent> getEvents();
 
@@ -37,8 +40,12 @@ public interface GameProvider {
     
     List<MoveModel> getMoves();
 
+    void start();
+    
     void makeMove(Byte position);
 
+    void onBoardClicked();
+    
     void withdraw();
 
     void setIsRecording(boolean isRecording);

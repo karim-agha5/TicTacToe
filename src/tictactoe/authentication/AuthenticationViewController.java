@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,8 +33,8 @@ public class AuthenticationViewController extends RouteViewController implements
     @FXML
     private BorderPane cardView;
 
-     private AuthenticationViewModel viewModel;
-    
+    private AuthenticationViewModel viewModel;
+
     @Override
     public URL getViewUri() {
         return getClass().getResource("AuthenticationView.fxml");
@@ -45,25 +46,27 @@ public class AuthenticationViewController extends RouteViewController implements
         scene().getStylesheets().add(resourcesLoader().getCss(Styles.AUTHENTICATION_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
         backButton.setOnAction((e) -> router().pop());
-        
+
         List<TabView.Tab> tabs = new LinkedList<>();
         tabs.add(new TabView.Tab("Login", attachController(new LoginViewController())));
         tabs.add(new TabView.Tab("Sign up", attachController(new SignupViewController())));
-        
+
         TabView tabView = new TabView(tabs);
-        
+
         cardView.setCenter(tabView);
         viewModel.bind(this);
     }
-    
-     @Override
+
+    @Override
     public void didUpdateState(Boolean newState) {
-        if (newState == false) {
-            uIAlert().showErrorDialog("Error", "Error authenticating you");
-        } else if (newState == true) {
-            uIAlert().close();
-            router().pop(true);
-        }
+        Platform.runLater(() -> {
+            if (newState == false) {
+                uIAlert().showErrorDialog("Error", "Error authenticating you");
+            } else if (newState == true) {
+                uIAlert().close();
+                router().pop(true);
+            }
+        });
     }
 
     @Override

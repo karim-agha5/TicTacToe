@@ -37,7 +37,7 @@ public class ViewModel<T> {
     }
 
     public void unbind(ViewModelListener<T> listener) {
-        ObjectUtils.ifNotNull(listeners.get(listener), (e) -> e.cancel());
+        ObjectUtils.ifNotNull(listeners.remove(listener), (e) -> e.cancel());
         if (listeners.isEmpty()) {
             stop();
         }
