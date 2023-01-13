@@ -4,6 +4,7 @@
  */
 package tictactoe.authentication.login;
 
+import TicTacToeCommon.models.requests.LoginRequest;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -20,7 +21,6 @@ public class LoginViewController extends ViewController {
     private PasswordField password;
     @FXML
     private Button loginButton;
-    
 
     @Override
     public URL getViewUri() {
@@ -29,6 +29,9 @@ public class LoginViewController extends ViewController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loginButton.setOnAction((e) -> {});
+        loginButton.setOnAction((e) -> {
+            handle().authenticationProvider().login(new LoginRequest(username.getText(), password.getText()));
+        });
     }
+
 }

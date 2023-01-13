@@ -15,12 +15,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import tictactoe.authentication.login.LoginViewController;
 import tictactoe.authentication.signup.SignupViewController;
+import tictactoe.base.ViewModelListener;
 import tictactoe.components.tabview.TabView;
 import tictactoe.resources.styles.Styles;
 import tictactoe.router.RouteViewController;
 import tictactoe.utils.UIHelper;
 
-public class AuthenticationViewController extends RouteViewController {
+public class AuthenticationViewController extends RouteViewController implements ViewModelListener<Boolean> {
 
     @FXML
     private Region background;
@@ -31,6 +32,8 @@ public class AuthenticationViewController extends RouteViewController {
     @FXML
     private BorderPane cardView;
 
+     private AuthenticationViewModel viewModel;
+    
     @Override
     public URL getViewUri() {
         return getClass().getResource("AuthenticationView.fxml");
@@ -38,6 +41,7 @@ public class AuthenticationViewController extends RouteViewController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        viewModel = new AuthenticationViewModel(handle().authenticationProvider());
         scene().getStylesheets().add(resourcesLoader().getCss(Styles.AUTHENTICATION_STYLE_STRING).toString());
         background.setEffect(UIHelper.createBlurEffect());
         backButton.setOnAction((e) -> router().pop());
@@ -49,5 +53,21 @@ public class AuthenticationViewController extends RouteViewController {
         TabView tabView = new TabView(tabs);
         
         cardView.setCenter(tabView);
+        viewModel.bind(this);
+    }
+    
+     @Override
+    public void didUpdateState(Boolean newState) {
+        if (newState == false) {
+            uIAlert().showErrorDialog("Error", "Error authenticating you");
+        } else if (newState == true) {
+            uIAlert().close();
+            router().pop(true);
+        }
+    }
+
+    @Override
+    public void onClosed() {
+        viewModel.unbind(this);
     }
 }

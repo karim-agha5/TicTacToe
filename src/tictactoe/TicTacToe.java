@@ -4,9 +4,15 @@
  */
 package tictactoe;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tictactoe.authentication.AuthenticationProvider;
+import tictactoe.base.SocketHandler;
 import tictactoe.base.TicTacToeHandle;
 import tictactoe.landing.LandingViewController;
 import tictactoe.resources.ResourcesLoader;
@@ -17,8 +23,16 @@ import tictactoe.router.Router;
 public class TicTacToe extends Application implements TicTacToeHandle {
 
     private Router router;
+    private final SocketHandler socketHandler;
+    private final AuthenticationProvider authenticationProvider;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     private final ResourcesLoader resourcesLoader = new ResourcesLoader() {
     };
+    
+    public TicTacToe() {
+        socketHandler = new SocketHandler(this);
+        authenticationProvider = new AuthenticationProvider(socketHandler);
+    }
     
     @Override
     public Router router() {
@@ -31,9 +45,29 @@ public class TicTacToe extends Application implements TicTacToeHandle {
     }
 
     @Override
+    public SocketHandler socketHandler() {
+        return socketHandler;
+    }
+
+    @Override
+    public AuthenticationProvider authenticationProvider() {
+        return authenticationProvider;
+    }
+
+    @Override
     public void setupScene(Scene scene) {
         scene.getStylesheets().add(resourcesLoader.getCss(Styles.BASE_STYLE_STRING).toString());
         scene.getStylesheets().add(resourcesLoader.getCss(Styles.TABVIEW_STYLE_STRING).toString());
+    }
+    
+    @Override
+    public Future<?> submitJob(Runnable job) {
+        return executorService.submit(job);
+    }
+    
+    @Override
+    public <T> Future<T> submitJob(Callable<T> job) {
+        return executorService.submit(job);
     }
     
     @Override
@@ -42,6 +76,12 @@ public class TicTacToe extends Application implements TicTacToeHandle {
         router = new StackRouter(this, stage);
         router.push(new LandingViewController());
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        socketHandler.stop();
+        executorService.shutdown();
     }
     
     private void setupStage(Stage stage) {
@@ -55,4 +95,5 @@ public class TicTacToe extends Application implements TicTacToeHandle {
     public static void main(String[] args) {
         launch(args);
     }
+    
 }

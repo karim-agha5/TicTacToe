@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import tictactoe.base.ViewController;
 
 public class GameRecordTileViewController extends ViewController {
+
     private static final String CHECKED_IMAGE = "CheckedImage";
 
     @FXML
@@ -29,7 +30,7 @@ public class GameRecordTileViewController extends ViewController {
 
     public void setGameRecord(Object gameRecord) {
         this.gameRecord = gameRecord;
-        setGameRecordUI(gameRecord); 
+        setGameRecordUI(gameRecord);
     }
 
     @Override
@@ -40,6 +41,9 @@ public class GameRecordTileViewController extends ViewController {
     private void setGameRecordUI(Object gameRecord) {
         if (gameRecord != null) {
             gameLabel.setText(gameRecord.toString());
+            view().setVisible(true);
+        } else {
+            view().setVisible(false);
         }
     }
 

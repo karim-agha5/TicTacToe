@@ -14,4 +14,6 @@ public interface Styles {
     static final String AUTHENTICATION_STYLE_STRING = "authentication.css"; 
     static final String GAME_STYLE_STRING = "game.css"; 
     static final String USER_STYLE_STRING = "user.css"; 
+    static final String GAME_RESULT_STYLE_STRING = "game_result.css"; 
+    
 }
