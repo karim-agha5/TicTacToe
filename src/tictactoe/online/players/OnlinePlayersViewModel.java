@@ -20,6 +20,7 @@ public class OnlinePlayersViewModel extends ViewModel<Boolean> implements Observ
     private final ObservableList<UserModel> data;
     private final SocketHandler socketHandler;
     private ObservableValue.ListenCanceller socketSub;
+    private ObservableValue.ListenCanceller connectedSub;
 
     public OnlinePlayersViewModel(SocketHandler socketHandler) {
         data = FXCollections.observableArrayList();
@@ -29,10 +30,15 @@ public class OnlinePlayersViewModel extends ViewModel<Boolean> implements Observ
     public ObservableList<UserModel> getData() {
         return data;
     }
-    
+
     @Override
     public void start() {
         socketSub = socketHandler.getMessage().addListener(this);
+        connectedSub = socketHandler.getConnected().addListener((newValue) -> {
+            if (newValue != true) {
+                updateState(false);
+            }
+        });
     }
 
     @Override
@@ -51,9 +57,10 @@ public class OnlinePlayersViewModel extends ViewModel<Boolean> implements Observ
     public void fetch() {
         socketHandler.send(new OnlinePlayersRequest());
     }
-    
+
     @Override
     public void stop() {
         socketSub.cancel();
+        connectedSub.cancel();
     }
 }
