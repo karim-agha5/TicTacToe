@@ -39,10 +39,10 @@ public class UIAlert {
     
     public Boolean showPromptDialog(String title, String message) {
         close();
-        alert = createProgressAlert(title, message);
+        alert = createPromptAlert(title, message);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent()) {
-            return result.get().equals(ButtonType.YES);
+            return result.get().getButtonData().equals(ButtonType.YES.getButtonData());
         }
         return null;
     }

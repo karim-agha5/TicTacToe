@@ -21,14 +21,14 @@ public class GameRecordTileViewController extends ViewController {
     @FXML
     private ImageView checkedImage;
 
-    private Object gameRecord;
+    private String gameRecord;
 
     @Override
     public URL getViewUri() {
         return getClass().getResource("GameRecordTileView.fxml");
     }
 
-    public void setGameRecord(Object gameRecord) {
+    public void setGameRecord(String gameRecord) {
         this.gameRecord = gameRecord;
         setGameRecordUI(gameRecord);
     }
@@ -38,9 +38,9 @@ public class GameRecordTileViewController extends ViewController {
         setGameRecordUI(gameRecord);
     }
 
-    private void setGameRecordUI(Object gameRecord) {
+    private void setGameRecordUI(String gameRecord) {
         if (gameRecord != null) {
-            gameLabel.setText(gameRecord.toString());
+            gameLabel.setText(gameRecord);
             view().setVisible(true);
         } else {
             view().setVisible(false);

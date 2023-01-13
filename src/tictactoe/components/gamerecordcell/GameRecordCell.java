@@ -7,7 +7,7 @@ package tictactoe.components.gamerecordcell;
 import javafx.scene.control.ListCell;
 import tictactoe.base.ViewController;
 
-public class GameRecordCell extends ListCell<Object> {
+public class GameRecordCell extends ListCell<String> {
 
     private final GameRecordTileViewController gameRecordTileViewController;
     
@@ -17,7 +17,7 @@ public class GameRecordCell extends ListCell<Object> {
     }
 
     @Override
-    public void updateItem(Object item, boolean empty) {
+    public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
         gameRecordTileViewController.setGameRecord(item);
         gameRecordTileViewController.setSelected(isSelected());

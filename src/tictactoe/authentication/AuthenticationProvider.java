@@ -60,7 +60,7 @@ public class AuthenticationProvider implements AutoCloseable, ObservableValue.Ob
     public void openSocket() {
         socketHandler.start();
     }
-    
+
     public void closeSocketIfUnAuth() throws Exception {
         if (!isAuth.getValue()) {
             socketHandler.stop();
@@ -75,13 +75,11 @@ public class AuthenticationProvider implements AutoCloseable, ObservableValue.Ob
 
     @Override
     public void didChange(Object newValue) {
-        Platform.runLater(() -> {
-            if (newValue instanceof Boolean) {
-                handleConnection((Boolean) newValue);
-            } else if (newValue instanceof RemoteSendable) {
-                handleMessage((RemoteSendable) newValue);
-            }
-        });
+        if (newValue instanceof Boolean) {
+            handleConnection((Boolean) newValue);
+        } else if (newValue instanceof RemoteSendable) {
+            handleMessage((RemoteSendable) newValue);
+        }
     }
 
     private void handleConnection(Boolean isConnected) {

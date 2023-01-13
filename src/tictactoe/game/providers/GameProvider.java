@@ -16,12 +16,17 @@ import java.util.List;
  * @author m-essam
  */
 public interface GameProvider {
+    
+    public static final Integer FIRST_PLAYER = 0;
+    public static final Integer SECOND_PLAYER = 1;
 
     ObservableValue<GameEvent> getEvents();
 
     ObservableValue<Boolean> getCanInput();
 
     ObservableValue<Boolean> getLastMoveResult();
+    
+    ObservableValue<Boolean> getIsRecording();
     
     ObservableValue<Integer> getCurrentPlayer();
 
@@ -37,13 +42,17 @@ public interface GameProvider {
     
     List<MoveModel> getMoves();
 
-    void makeMove(Byte position);
+    void start();
+    
+    void makeMove(Integer position);
 
+    void onBoardClicked();
+    
     void withdraw();
 
     void setIsRecording(boolean isRecording);
-
-    boolean getIsRecording();
+    
+    boolean canRecord();
 
     void close();
     

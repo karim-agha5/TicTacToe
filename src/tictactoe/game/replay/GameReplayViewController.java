@@ -4,8 +4,6 @@ import TicTacToeCommon.models.MoveModel;
 import TicTacToeCommon.models.PlayerModel;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -72,7 +70,7 @@ public class GameReplayViewController extends RouteViewController {
 
     private String gameFileId;
 
-    private List<MoveModel> moves;
+    private GameRecordService.Record moves;
 
     private PlayerModel player1Model;
 
@@ -115,7 +113,7 @@ public class GameReplayViewController extends RouteViewController {
         player1Username.setText(player1Model.getName());
         player2Username.setText(player2Model.getName());
 
-        runTheRecord(moves);
+        runTheRecord(moves.getMoves());
 
     }
 

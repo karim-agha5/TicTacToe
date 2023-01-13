@@ -49,7 +49,11 @@ public class SocketHandler {
                     while (true) {
                         RemoteMessage receivedMessage = RemoteMessage.readFrom(in);
                         Logger.getLogger(getClass().getName()).info("Message received " + receivedMessage.getMessage());
-                        message.setValue(receivedMessage.getMessage());
+                        try {
+                            message.setValue(receivedMessage.getMessage());
+                        } catch (Exception e) {
+                            Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, e);
+                        }
                     }
                 } catch (IOException | ClassNotFoundException ex) {
                     Logger.getLogger(SocketHandler.class.getName()).log(Level.SEVERE, null, ex);

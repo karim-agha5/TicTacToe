@@ -7,12 +7,14 @@ package tictactoe.online.players;
 import TicTacToeCommon.models.UserModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
+import tictactoe.base.ViewModelListener;
 import tictactoe.components.onlineplayercell.OnlinePlayerCell;
 import tictactoe.resources.styles.Styles;
 import tictactoe.router.RouteViewController;
@@ -32,9 +34,30 @@ public class OnlinePlayersViewController extends RouteViewController {
     private ListView<UserModel> playersList;
 
     private OnlinePlayersViewModel viewModel;
-    
+
     private OnlineRequestViewModel requestViewModel;
 
+    private final ViewModelListener<Boolean> listResult = (Boolean newState) -> {
+        Platform.runLater(() -> {
+            if (newState == false) {
+                uIAlert().showErrorDialog("Error", "Error loading online players");
+                router().pop(false);
+            } else if (newState == true) {
+                uIAlert().close();
+            }
+        });
+    };
+    
+    private final ViewModelListener<Boolean> requesttResult = (Boolean newState) -> {
+        Platform.runLater(() -> {
+            if (newState == false) {
+                uIAlert().showErrorDialog("Failed", "Player refused to play");
+            } else if (newState == true) {
+                uIAlert().close();
+            }
+        });
+    };
+    
     @Override
     public URL getViewUri() {
         return getClass().getResource("OnlinePlayersView.fxml");
@@ -51,8 +74,8 @@ public class OnlinePlayersViewController extends RouteViewController {
         playersList.setCellFactory((e) -> {
             return new OnlinePlayerCell(this);
         });
-        viewModel.bind(this::listResult);
-        requestViewModel.bind(this::requesttResult);
+        viewModel.bind(listResult);
+        requestViewModel.bind(requesttResult);
         uIAlert().showLoadingDialog("loading", "getting data");
         startButton.setOnAction((event) -> {
             ObservableList<UserModel> selected = playersList.getSelectionModel().getSelectedItems();
@@ -65,26 +88,9 @@ public class OnlinePlayersViewController extends RouteViewController {
         viewModel.fetch();
     }
 
-    public void listResult(Boolean newState) {
-        if (newState == false) {
-            uIAlert().showErrorDialog("Error", "Error loading online players");
-            router().pop(false);
-        } else if (newState == true) {
-            uIAlert().close();
-        }
-    }
-    
-    public void requesttResult(Boolean newState) {
-        if (newState == false) {
-            uIAlert().showErrorDialog("Failed", "Player refused to play");
-        } else if (newState == true) {
-            uIAlert().close();
-        }
-    }
-
     @Override
     public void onClosed() {
-        viewModel.unbind(this::listResult);
-        requestViewModel.unbind(this::requesttResult);
+        viewModel.unbind(listResult);
+        requestViewModel.unbind(requesttResult);
     }
 }
