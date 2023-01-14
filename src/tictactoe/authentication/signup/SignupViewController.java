@@ -7,10 +7,13 @@ package tictactoe.authentication.signup;
 import TicTacToeCommon.models.requests.SignUpRequest;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import tictactoe.base.SocketHandler;
 import tictactoe.base.ViewController;
 
 public class SignupViewController extends ViewController {
@@ -30,7 +33,11 @@ public class SignupViewController extends ViewController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         signupButton.setOnAction((e) -> {
-            handle().authenticationProvider().signUp(new SignUpRequest(username.getText(), password.getText()));
+            try {
+                handle().authenticationProvider().signUp(new SignUpRequest(username.getText(), password.getText()));
+            } catch (SocketHandler.NotConnectedException ex) {
+                uIAlert().showErrorDialog("Error", "Error authenticating you");
+            }
         });
     }
 }

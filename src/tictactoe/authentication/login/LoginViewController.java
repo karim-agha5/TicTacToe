@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import tictactoe.base.SocketHandler;
 import tictactoe.base.ViewController;
 
 public class LoginViewController extends ViewController {
@@ -30,7 +31,11 @@ public class LoginViewController extends ViewController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loginButton.setOnAction((e) -> {
-            handle().authenticationProvider().login(new LoginRequest(username.getText(), password.getText()));
+            try {
+                handle().authenticationProvider().login(new LoginRequest(username.getText(), password.getText()));
+            } catch (SocketHandler.NotConnectedException ex) {
+                uIAlert().showErrorDialog("Error", "Error authenticating you");
+            }
         });
     }
 

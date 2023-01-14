@@ -9,6 +9,8 @@ import TicTacToeCommon.models.base.RemoteSendable;
 import TicTacToeCommon.models.requests.StartGameRequest;
 import TicTacToeCommon.models.responses.StartGameResponse;
 import TicTacToeCommon.utils.ObservableValue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import tictactoe.base.SocketHandler;
 import tictactoe.base.ViewModel;
 
@@ -40,6 +42,11 @@ public class OnlineRequestViewModel extends ViewModel<Boolean> implements Observ
     }
 
     void sendRequestTo(UserModel selectedUser) {
-        socketHandler.send(new StartGameRequest(selectedUser));
+        try {
+            socketHandler.send(new StartGameRequest(selectedUser));
+        } catch (SocketHandler.NotConnectedException ex) {
+            updateState(false);
+            Logger.getLogger(OnlineRequestViewModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
