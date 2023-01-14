@@ -12,6 +12,8 @@ import TicTacToeCommon.models.responses.GameMoveResponse;
 import TicTacToeCommon.models.responses.GameWithdrawResponse;
 import TicTacToeCommon.services.engine.piece.League;
 import TicTacToeCommon.utils.ObservableValue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import tictactoe.authentication.AuthenticationProvider;
 import tictactoe.base.SocketHandler;
 
@@ -46,12 +48,22 @@ public class OnlineGameHandler extends GameHandler implements ObservableValue.Ob
 
     @Override
     public void makeMove(Integer position) {
-        socketHandler.send(new GameMoveRequest(gameId, position));
+        try {
+            socketHandler.send(new GameMoveRequest(gameId, position));
+        } catch (SocketHandler.NotConnectedException ex) {
+            lastMoveResult.setValue(false);
+            Logger.getLogger(OnlineGameHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void withdraw() {
-        socketHandler.send(new GameWithdrawRequest(gameId));
+        try {
+            socketHandler.send(new GameWithdrawRequest(gameId));
+        } catch (SocketHandler.NotConnectedException ex) {
+            events.setValue(new GameEvent.Ended(gameId));
+            Logger.getLogger(OnlineGameHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

@@ -13,6 +13,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -92,12 +94,22 @@ public class TicTacToe extends Application implements TicTacToeHandle {
                     UserModel player = ((JoinGameRequest) newValue).getPlayer();
                     Boolean result = alert.showPromptDialog("New Game Request", "Player " + player.getName() + " wants to play with you. Would you like to start game with him?");
                     System.out.println(result);
-                    socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
+                    try {
+                        socketHandler.send(new JoinGameResponse(true, new GameOfferAnswer(result == true, player.getId())));
+                    } catch (SocketHandler.NotConnectedException ex) {
+                        alert.showErrorDialog("Error", "Failed to accept the request");
+                        Logger.getLogger(TicTacToe.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else if (newValue instanceof GameEvent.Started) {
                     GameEvent.Started event = (GameEvent.Started) newValue;
                     router.push(new GameViewController(new OnlineGameHandler(event, socketHandler, authenticationProvider)));
                 }
             });
+        });
+        socketHandler.getConnected().addListener((connected) -> {
+            if (connected == false) {
+                alert.showErrorDialog("Error", "Server is down");
+            }
         });
     }
 

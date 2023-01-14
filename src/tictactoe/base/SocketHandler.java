@@ -75,7 +75,10 @@ public class SocketHandler {
         }
     }
 
-    public void send(RemoteSendable message) {
+    public void send(RemoteSendable message) throws NotConnectedException {
+       if (out == null) {
+           throw new NotConnectedException();
+       }
         handle.submitJob(() -> {
             Logger.getLogger(getClass().getName()).info("Sending message " + message);
             new RemoteMessage(message).writeInto(out);
@@ -91,4 +94,7 @@ public class SocketHandler {
     public ObservableValue<RemoteSendable> getMessage() {
         return message;
     }
+    
+    
+    public static class NotConnectedException extends Exception {}
 }

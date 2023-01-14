@@ -35,12 +35,12 @@ public class AuthenticationProvider implements AutoCloseable, ObservableValue.Ob
         message = socketHandler.getMessage().addListener(this);
     }
 
-    public void signUp(SignUpRequest request) {
+    public void signUp(SignUpRequest request) throws SocketHandler.NotConnectedException {
         socketHandler.start();
         socketHandler.send(request);
     }
 
-    public void login(LoginRequest request) {
+    public void login(LoginRequest request) throws SocketHandler.NotConnectedException {
         socketHandler.start();
         socketHandler.send(request);
     }

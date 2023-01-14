@@ -9,6 +9,8 @@ import TicTacToeCommon.models.base.RemoteSendable;
 import TicTacToeCommon.models.requests.OnlinePlayersRequest;
 import TicTacToeCommon.models.responses.OnlinePlayersResponse;
 import TicTacToeCommon.utils.ObservableValue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,7 +57,12 @@ public class OnlinePlayersViewModel extends ViewModel<Boolean> implements Observ
     }
 
     public void fetch() {
-        socketHandler.send(new OnlinePlayersRequest());
+        try {
+            socketHandler.send(new OnlinePlayersRequest());
+        } catch (SocketHandler.NotConnectedException ex) {
+            updateState(false);
+            Logger.getLogger(OnlinePlayersViewModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
